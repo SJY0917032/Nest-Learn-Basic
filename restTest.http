@@ -1,0 +1,16 @@
+### Nest Docs HTTP 코드 테스트를 위한 코드입니다.
+
+GET http://api.localhost:3001
+
+
+
+###
+
+POST http://localhost:3001/users
+Content-Type: application/json
+
+{
+    "name": "TEST",
+    "email": "Test@Test.com",
+    "password": "1234"
+}
