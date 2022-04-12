@@ -10,7 +10,8 @@ POST http://localhost:3001/users
 Content-Type: application/json
 
 {
-    "name": "TEST",
-    "email": "Test@Test.com",
-    "password": "1234"
+    "name": "ang",
+    "email": "nang6_naver.com",
+    "password": "ang123"
 }
+
