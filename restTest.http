@@ -11,7 +11,16 @@ Content-Type: application/json
 
 {
     "name": "ang",
-    "email": "nang6_naver.com",
-    "password": "ang123"
+    "email": "nang6_25@naver.com",
+    "password": "!sS3479932"
 }
 
+###
+
+POST http://localhost:3001/users/login
+Content-Type: application/json
+
+{
+    "email": "nang6_25@naver.com",
+    "password": "안보여줌"
+}

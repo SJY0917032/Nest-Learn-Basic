@@ -1,5 +1,10 @@
-import { Injectable, UnprocessableEntityException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { AuthService } from 'src/auth/auth.service';
 import { EmailService } from 'src/email/email.service';
 import { Repository } from 'typeorm';
 import { ulid } from 'ulid';
@@ -9,6 +14,7 @@ import { UserEntity } from './entity/user.entity';
 @Injectable()
 export class UsersService {
   constructor(
+    private authService: AuthService,
     private emailService: EmailService, //
     @InjectRepository(UserEntity)
     private readonly usersRepository: Repository<UserEntity>,
@@ -30,7 +36,9 @@ export class UsersService {
     const user = await this.usersRepository.findOne({
       where: { email: emailAddress },
     });
-    return user !== undefined;
+    console.log(user);
+
+    return user !== null;
   }
 
   private async saveUser(
@@ -56,19 +64,37 @@ export class UsersService {
   }
 
   async verifyEmail(signupVerifyToken: string): Promise<string> {
-    // todos
     // 1. DB에서 토큰으로 회원가입중인 유저가있다면 true 없으면 에러
+    const user = await this.usersRepository.findOne({
+      where: { signupVerifyToken: signupVerifyToken },
+    });
     // 2. 바로 로그인이 되도록 jwt를 발급시킨다.
+    if (!user) {
+      throw new NotFoundException('유저가 존재하지 않습니다.');
+    }
 
-    throw new Error('Method not implemented');
+    return this.authService.login({
+      id: user.id,
+      name: user.name,
+      email: user.email,
+    });
   }
 
   async login(email: string, password: string): Promise<string> {
-    // todos
     // 1. email, password 가진 유저가 db에있다면 처리, 없으면 에러
-    // 2. JWT를 발급해 전달
+    const user = await this.usersRepository.findOne({
+      where: { email: email, password: password },
+    });
 
-    throw new Error('method not implemented');
+    if (!user) {
+      throw new NotFoundException('유저가 존재하지 않습니다');
+    }
+    // 2. JWT를 발급해 전달
+    return this.authService.login({
+      id: user.id,
+      name: user.name,
+      email: user.email,
+    });
   }
 
   async getUserInfo(userId: string): Promise<string> {
